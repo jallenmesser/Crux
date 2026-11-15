@@ -1,10 +1,12 @@
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { useWorkoutSession } from '@/features/training/SessionProvider';
 import { isResumable } from '@/features/training/sessionStorage';
+import { useCompletedToday } from '@/features/training/useCompletedToday';
 import { colors, radius, spacing, type } from '@/theme/tokens';
 import { describeSet } from '@/utils/format';
 
@@ -12,6 +14,12 @@ export default function Overview() {
   const router = useRouter();
   const { workout, session, startWorkout } = useWorkoutSession();
   const inProgress = !!session && isResumable(session);
+  const { entry: doneToday, loaded } = useCompletedToday(workout.id);
+
+  // Today's workout is already done: no second run. Send them home, where it can be edited.
+  useEffect(() => {
+    if (loaded && doneToday && !inProgress) router.replace('/');
+  }, [loaded, doneToday, inProgress, router]);
   const muscles = Array.from(new Set(workout.exercises.flatMap((e) => e.muscleGroups ?? [])));
 
   return (

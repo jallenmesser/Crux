@@ -113,6 +113,29 @@ describe('skip and next', () => {
   });
 });
 
+describe('RESTART_EXERCISES (nothing logged)', () => {
+  const allSkipped = () =>
+    run(start(), T0, { type: 'SKIP_EXERCISE' }, { type: 'SKIP_EXERCISE' }, { type: 'SKIP_EXERCISE' });
+
+  it('goes back to the first exercise and clears skips when everything was skipped', () => {
+    const s = step(allSkipped(), { type: 'RESTART_EXERCISES' }, T0);
+    expect(s).toMatchObject({ status: 'exercising', exerciseIndex: 0, setIndex: 0, skippedExerciseIds: [] });
+    expect(isWorkoutDone(s, workout)).toBe(false);
+  });
+
+  it('is ignored when sets were logged, mid-workout, or paused', () => {
+    const logged = run(start(), T0, { type: 'COMPLETE_SET' }, { type: 'SKIP_REST' }, { type: 'SKIP_EXERCISE' }, { type: 'SKIP_EXERCISE' }, { type: 'SKIP_EXERCISE' });
+    expect(step(logged, { type: 'RESTART_EXERCISES' }, T0)).toBe(logged);
+    const mid = start();
+    expect(step(mid, { type: 'RESTART_EXERCISES' }, T0)).toBe(mid);
+  });
+
+  it('finishing is still refused with nothing logged', () => {
+    const s = allSkipped();
+    expect(step(s, { type: 'FINISH' }, T0)).toBe(s);
+  });
+});
+
 describe('rest', () => {
   const resting = () => step(start(), { type: 'COMPLETE_SET' }, T0);
 

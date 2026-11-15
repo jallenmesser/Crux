@@ -8,6 +8,8 @@ import { Screen } from '@/components/ui/Screen';
 import { loadProgress, type Progress } from '@/features/gamification/localProgress';
 import { useWorkoutSession } from '@/features/training/SessionProvider';
 import { isResumable, resumeInfo } from '@/features/training/sessionStorage';
+import { summarize } from '@/features/training/sessionMachine';
+import { useCompletedToday } from '@/features/training/useCompletedToday';
 import { localStore } from '@/services/storage/localStore';
 import { colors, radius, spacing, type } from '@/theme/tokens';
 
@@ -15,6 +17,7 @@ export default function Home() {
   const router = useRouter();
   const { ready, workout, session } = useWorkoutSession();
   const [progress, setProgress] = useState<Progress | null>(null);
+  const { entry: doneToday, loaded: historyLoaded } = useCompletedToday(workout.id);
 
   useFocusEffect(
     useCallback(() => {
@@ -26,9 +29,13 @@ export default function Home() {
   const info = session && resumeInfo(session, workout);
   const finishedUnclaimed = session?.status === 'completed';
 
+  const showDone = !resumable && !finishedUnclaimed && !!doneToday;
+  const doneSummary = doneToday ? summarize(doneToday.session, workout) : null;
+
   let action = <Button label="START WORKOUT" onPress={() => router.push('/workout/overview')} />;
   if (resumable) action = <Button label="RESUME WORKOUT" onPress={() => router.push('/workout/run')} />;
   if (finishedUnclaimed) action = <Button label="SEE RESULTS" onPress={() => router.push('/workout/complete')} />;
+  if (showDone) action = <Button label="EDIT WORKOUT" variant="secondary" onPress={() => router.push('/workout/edit')} />;
 
   return (
     <Screen>
@@ -48,7 +55,12 @@ export default function Home() {
           </Text>
         ) : null}
         {finishedUnclaimed ? <Text style={styles.resume}>Workout finished. Collect your XP.</Text> : null}
-        {ready ? action : null}
+        {showDone && doneToday && doneSummary ? (
+          <Text style={styles.done}>
+            COMPLETED TODAY · {doneSummary.completedSets} sets · +{doneToday.xpAwarded} XP
+          </Text>
+        ) : null}
+        {ready && historyLoaded ? action : null}
       </View>
 
       <Text style={styles.kicker}>DAILY OBJECTIVE</Text>
@@ -68,5 +80,6 @@ const styles = StyleSheet.create({
   title: { color: colors.textPrimary, fontSize: type.title, fontWeight: '800' },
   body: { color: colors.textPrimary, fontSize: type.body, fontWeight: '600' },
   muted: { color: colors.textSecondary, fontSize: type.caption },
+  done: { color: colors.accent, fontSize: type.body, fontWeight: '800', letterSpacing: 1, marginVertical: spacing.sm },
   resume: { color: colors.textPrimary, fontSize: type.body, marginVertical: spacing.sm },
 });

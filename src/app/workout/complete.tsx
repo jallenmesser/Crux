@@ -8,6 +8,7 @@ import { Screen } from '@/components/ui/Screen';
 import { awardForSession, type AwardOutcome } from '@/features/gamification/localProgress';
 import { useWorkoutSession } from '@/features/training/SessionProvider';
 import { summarize } from '@/features/training/sessionMachine';
+import { dateKey, upsertCompleted } from '@/features/training/workoutHistory';
 import { localStore } from '@/services/storage/localStore';
 import { colors, radius, spacing, type } from '@/theme/tokens';
 import { formatDuration } from '@/utils/format';
@@ -30,7 +31,15 @@ export default function Complete() {
     // The award is idempotent per session, so a re-render or relaunch never double-awards.
     if (requested.current || !session) return;
     requested.current = true;
-    awardForSession(localStore, session, LOCAL_USER, Date.now()).then(setOutcome);
+    awardForSession(localStore, session, LOCAL_USER, Date.now()).then(async (o) => {
+      // Save to history (idempotent per session) so the day shows as completed and its sets can be edited.
+      await upsertCompleted(localStore, {
+        session,
+        xpAwarded: o.amount,
+        dateKey: dateKey(session.completedAt ?? Date.now()),
+      }).catch(() => {});
+      setOutcome(o);
+    });
   }, [ready, completed, session, router]);
 
   if (!session || !completed) return null;

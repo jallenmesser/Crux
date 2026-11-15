@@ -16,12 +16,30 @@ type Props = {
   send: (e: SessionEvent) => void;
   onPause: () => void;
   onFinishEarly: () => void;
+  onQuit: () => void;
 };
 
-export function ExerciseView({ workout, session, send, onPause, onFinishEarly }: Props) {
+export function ExerciseView({ workout, session, send, onPause, onFinishEarly, onQuit }: Props) {
   const values = useRef<SetValues>({});
   const done = isWorkoutDone(session, workout);
   const total = workout.exercises.length;
+
+  if (done && session.loggedSets.length === 0) {
+    return (
+      <Screen
+        footer={
+          <>
+            <Button label="GO BACK TO EXERCISES" onPress={() => send({ type: 'RESTART_EXERCISES' })} />
+            <Button label="Quit without finishing" variant="danger" onPress={onQuit} />
+          </>
+        }
+      >
+        <Text style={styles.kicker}>NOTHING LOGGED</Text>
+        <Text style={styles.title}>Every exercise was skipped.</Text>
+        <Text style={styles.body}>There is nothing to save yet. Go back and do some sets, or quit. No XP for an empty workout.</Text>
+      </Screen>
+    );
+  }
 
   if (done) {
     return (

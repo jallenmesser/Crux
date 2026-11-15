@@ -116,6 +116,12 @@ export function transition(
       return { ...session, exerciseIndex: session.exerciseIndex + 1, setIndex: 0 };
     }
 
+    case 'RESTART_EXERCISES': {
+      // Escape hatch when every exercise was skipped and nothing is logged: start the list over.
+      if (session.status !== 'exercising' || !done || session.loggedSets.length > 0) return session;
+      return { ...session, exerciseIndex: 0, setIndex: 0, skippedExerciseIds: [] };
+    }
+
     case 'SKIP_REST': {
       if (session.status !== 'resting') return session;
       return { ...session, status: 'exercising', restEndsAt: null };

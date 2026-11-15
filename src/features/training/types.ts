@@ -65,6 +65,7 @@ export type SessionEvent =
   | { type: 'COMPLETE_SET'; reps?: number; weightKg?: number; durationSec?: number; distanceM?: number }
   | { type: 'SKIP_EXERCISE' }
   | { type: 'NEXT_EXERCISE' }
+  | { type: 'RESTART_EXERCISES' }
   | { type: 'SKIP_REST' }
   | { type: 'ADJUST_REST'; deltaSeconds: number }
   | { type: 'REST_DONE' }

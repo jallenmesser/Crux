@@ -44,5 +44,5 @@ export default function Run() {
 
   if (status === 'paused') return <PausedView session={session} send={send} onQuit={quit} onFinishEarly={finishEarly} />;
   if (status === 'resting') return <RestView workout={workout} session={session} send={send} onPause={pause} />;
-  return <ExerciseView workout={workout} session={session} send={send} onPause={pause} onFinishEarly={finishEarly} />;
+  return <ExerciseView workout={workout} session={session} send={send} onPause={pause} onFinishEarly={finishEarly} onQuit={quit} />;
 }
