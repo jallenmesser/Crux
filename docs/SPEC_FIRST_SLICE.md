@@ -117,10 +117,10 @@ Before done: verification-loop. Before the backend and auth work is merged: secu
 7. Device validation and verification-loop.
 Each step is a small commit on the branch. Nothing goes to main without approval.
 
-## 15. Decisions needed from Jallen
-1. Backend: Supabase / Firebase / custom.
-2. Auth for the slice: anonymous / email / social.
-3. XP formula: A / B / C.
-4. Level curve: A / B / C.
-5. Seed workout content: use my placeholder (clearly labeled) or you supply it.
-6. Default rest time per exercise: **PROPOSED** a single config value, number needed (I will not guess).
+## 15. Decisions (resolved by Jallen)
+1. Backend: Supabase.
+2. Auth: none for the slice. Anonymous device account behind a user-id interface, so no login screens and fast iteration. Real auth comes later without touching the workout code.
+3. XP: prototype cadence. Slice uses base 10 + 1 per completed set. Timed/distance bonuses, streak, weekly bonus and daily cap are deferred (ASSUMPTION, confirm if you want any of them in the slice).
+4. Level curve: fixed test number, flat 20 XP per level, in config, labeled placeholder. Final curve decided before ship.
+5. Workout content: placeholder, but the data shape must cover typical workout needs: warm-up, strength sets (reps x weight), bodyweight reps, timed holds, cardio by time or distance, per-exercise notes, and per-exercise rest. Supersets and circuits are shaped for but not built in the slice UI.
+6. Rest: 10 seconds default for now, stored as a per-exercise value that falls back to one config default, so it can vary by workout later.
