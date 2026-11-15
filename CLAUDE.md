@@ -12,7 +12,7 @@ Full product context lives in `docs/PRODUCT_BRIEF.md`. Read it before planning. 
 - Never push to main without approval. Work on a branch.
 
 ## Do not invent
-Do not make up XP values, level thresholds, pricing, database schemas, AI progression rules, or integrations. If one is needed, ask. Propose options and let Jallen pick.
+Do not make up XP values, level thresholds, pricing, database schemas, AI progression rules, or integrations. If one is needed, ask. Propose options and let Jallen pick. The Replit prototype has working XP and level numbers (see `docs/REPLIT_PROTOTYPE.md`), which the brief calls undecided. Use them as the starting proposal, not as final.
 
 ## Architecture rules (from the brief)
 - XP is transaction-based, with one record per award. Never just increment a number from the UI.
@@ -31,7 +31,7 @@ One complete workout, end to end: today's workout, overview, active exercise wit
 3D avatars, AR/VR, AI video form correction, influencer classes, marketplace, full social feed. Nutrition, mental wellness, and social are planned but not in the first slice.
 
 ## Existing Replit prototype
-A working prototype exists on Replit, but its stack was never documented. Before reusing anything, inspect its source (if available) and confirm what is reusable. Do not copy web UI code directly into React Native.
+A web prototype exists (React, Vite, Express, Drizzle, Postgres). It has XP, a Battle Pass, programs, and workout logging, but no AI trainer. Read `docs/REPLIT_PROTOTYPE.md` for the audit and `reference/replit-prototype/` for the source files worth reading. Do not copy web UI code into React Native, and do not copy its auth config, XP award flow, or debug endpoints. Its XP values are a baseline that Jallen must confirm.
 
 ## Brand voice
 Confident, competitive, energetic, modern, slightly playful. Not corporate or cheesy. Dark grayscale base, bold type, neon accents that can change by program or season. Exact colors are not decided.
